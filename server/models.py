@@ -18,3 +18,13 @@ class Exercise(db.Model):
     def __repr__(self):
         return f"Exercise(name={self.name}, category={self.category}, equipment_needed={self.equipment_needed})"
     
+class Workout(db.Model):
+    __tablename__ = 'workouts'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date)
+    duration_minutes = db.Column(db.Integer)
+    notes = db.Column(db.Text)
+    
+    def __repr__(self):
+        return f"Workout(date={self.date}, duration_minutes={self.duration_minutes}, notes={self.notes})"
