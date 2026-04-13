@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
-from sqlalchemy import MetaData
+from sqlalchemy import MetaData, CheckConstraint
 
 metadata = MetaData()
 
@@ -70,7 +70,7 @@ class WorkoutExercises(db.Model):
     
     @validates('duration_seconds')
     def validate_duration_seconds(self, key, duration_seconds):
-        if not duration_seconds and duration_seconds < 0:
+        if duration_seconds is not None and duration_seconds < 0:
             raise ValueError("Duration seconds cannot be empty and less than 0.")
     
     def __repr__(self):
