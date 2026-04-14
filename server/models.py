@@ -15,8 +15,11 @@ class Exercise(db.Model):
     category = db.Column(db.String)
     equipment_needed = db.Column(db.Boolean)
     
-    # Establish the r/ship to WorkoutExercise
-    workoutExercise = db.relationship('WorkoutExercises', back_populates='exercise')
+    # One-to-one r/ship to WorkoutExercise
+    workoutExercise = db.relationship('WorkoutExercises', back_populates='exercise', uselist=False)
+    
+    # One-to-many r/ship with WorkoutExercises
+    workout_exercises = db.relationship('WorkoutExercises', back_populates='exe', cascade='all, delete-orphan')
     
     # Many-to-many with Workout through WorkoutExercise
     workout = db.relationship('Workout', secondary='workoutExercises')
@@ -36,11 +39,11 @@ class Workout(db.Model):
     duration_minutes = db.Column(db.Integer)
     notes = db.Column(db.Text)
     
-    # Establish the r/ship to WorkoutExercise
-    workoutExercise = db.relationship('WorkoutExercises', back_populates='workout')
+    # One-to-one r/ship to WorkoutExercise
+    workoutExercise = db.relationship('WorkoutExercises', back_populates='workout', uselist=False)
     
-    # Many-to-many with Exercise through WorkoutExercise
-    exercise = db.relationship('Exercise', secondary='workoutExercises')
+    # One-to-many r/ship to WorkoutExercises
+    workout_exercises = db.relationship('WorkoutExercises', back_populates='work', cascade='all, delete-orphan')
     
     __table_args__ = (
         CheckConstraint("duration_minutes > 0", name='workout_duration'),
@@ -51,6 +54,13 @@ class Workout(db.Model):
         if not duration_minutes and duration_minutes < 0:
             raise ValueError("Duration minutes cannot be empty and less than 0.")
         return duration_minutes
+    
+    def to_dict(self):
+        return {
+            'date': self.date,
+            'duration_minutes': self.duration_minutes,
+            'notes' : self.notes
+        }
 
     def __repr__(self):
         return f"Workout(date={self.date}, duration_minutes={self.duration_minutes}, notes={self.notes})"
@@ -64,9 +74,13 @@ class WorkoutExercises(db.Model):
     sets = db.Column(db.Integer)
     duration_seconds = db.Column(db.Integer)
     
-    # Establish the r/ship to Workout and Exercise
-    workout = db.relationship('Workout', back_populates='workoutExercise')
-    exercise = db.relationship('Exercise', back_populates='workoutExercise')
+    # One-to-one r/ship to Workout and Exercise
+    workout = db.relationship('Workout', back_populates='workoutExercise', uselist=False)
+    exercise = db.relationship('Exercise', back_populates='workoutExercise', uselist=False)
+    
+    # One-to-many r/ship to Workout & Exercise
+    work = db.relationship('Workout', back_populates='workout_exercises')
+    exe = db.relationship('Exercise', back_populates='workout_exercises')
     
     @validates('duration_seconds')
     def validate_duration_seconds(self, key, duration_seconds):
