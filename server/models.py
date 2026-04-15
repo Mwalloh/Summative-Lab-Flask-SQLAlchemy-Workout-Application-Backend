@@ -16,13 +16,7 @@ class Exercise(db.Model):
     equipment_needed = db.Column(db.Boolean)
     
     # One-to-one r/ship to WorkoutExercise
-    workoutExercise = db.relationship('WorkoutExercises', back_populates='exercise', uselist=False)
-    
-    # One-to-many r/ship with WorkoutExercises
-    workout_exercises = db.relationship('WorkoutExercises', back_populates='exe', cascade='all, delete-orphan')
-    
-    # Many-to-many with Workout through WorkoutExercise
-    workout = db.relationship('Workout', secondary='workoutExercises')
+    workoutExercise = db.relationship('WorkoutExercises', back_populates='exercise')
     
     __table_args__ = (
         CheckConstraint("LENGTH(name) > 3", name='exercise_name_length_check'),
@@ -39,11 +33,8 @@ class Workout(db.Model):
     duration_minutes = db.Column(db.Integer)
     notes = db.Column(db.Text)
     
-    # One-to-one r/ship to WorkoutExercise
-    workoutExercise = db.relationship('WorkoutExercises', back_populates='workout', uselist=False)
-    
-    # One-to-many r/ship to WorkoutExercises
-    workout_exercises = db.relationship('WorkoutExercises', back_populates='work', cascade='all, delete-orphan')
+    # Establish r/ship
+    workoutExercise = db.relationship('WorkoutExercises', back_populates='workout')
     
     __table_args__ = (
         CheckConstraint("duration_minutes > 0", name='workout_duration'),
@@ -74,13 +65,9 @@ class WorkoutExercises(db.Model):
     sets = db.Column(db.Integer)
     duration_seconds = db.Column(db.Integer)
     
-    # One-to-one r/ship to Workout and Exercise
-    workout = db.relationship('Workout', back_populates='workoutExercise', uselist=False)
-    exercise = db.relationship('Exercise', back_populates='workoutExercise', uselist=False)
-    
-    # One-to-many r/ship to Workout & Exercise
-    work = db.relationship('Workout', back_populates='workout_exercises')
-    exe = db.relationship('Exercise', back_populates='workout_exercises')
+    # Establish r/ship btwn Workout & Exercise
+    workout = db.relationship('Workout', back_populates='workoutExercise')
+    exercise = db.relationship('Exercise', back_populates='workoutExercise')
     
     @validates('duration_seconds')
     def validate_duration_seconds(self, key, duration_seconds):
