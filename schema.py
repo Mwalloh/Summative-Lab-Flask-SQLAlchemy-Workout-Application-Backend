@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields, validates, validates_schema, ValidationError
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-from server.models import Exercise, Workout, WorkoutExercise
+from server.models import Exercise, Workout, WorkoutExercises
 
 
 class ExerciseSchema(SQLAlchemyAutoSchema):
@@ -35,7 +35,7 @@ class ExerciseCreateSchema(Schema):
 
 class WorkoutExerciseSchema(SQLAlchemyAutoSchema):
     class Meta:
-        model = WorkoutExercise
+        model = WorkoutExercises
         load_instance = True
         include_fk = True
 
